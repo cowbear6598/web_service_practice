@@ -261,6 +261,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-await"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1db4fa49eadf87fb0822f01dbbd4ecb52121c15b3ad46c65b2e573db165d8b83"
+dependencies = [
+ "futures",
+]
+
+[[package]]
 name = "async-trait"
 version = "0.1.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -611,6 +620,12 @@ name = "funty"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6d5a32815ae3f33302d95fdcb2ce17862f8c65363dcfd29360480ba1001fc9c"
+
+[[package]]
+name = "futures"
+version = "0.1.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a471a38ef8ed83cd6e40aa59c1ffe17db6855c18e3604d9c4ed8c08ebc28678"
 
 [[package]]
 name = "futures-channel"
@@ -1951,7 +1966,10 @@ name = "web_service_pratice"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "async-await",
  "mongodb",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

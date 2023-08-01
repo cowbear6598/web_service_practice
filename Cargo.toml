@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 actix-web = "4.3.1"
 mongodb = "2.5.0"
+serde = "1.0.164"
+serde_json = "1.0.96"
+async-await = "0.2.1"
