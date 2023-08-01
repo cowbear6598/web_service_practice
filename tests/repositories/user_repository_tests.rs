@@ -5,7 +5,7 @@ mod user_repository_tests {
         adapters::user_trait::UserRepositoryTrait,
         frameworks::repositories::user_repository::UserRepository,
     };
-    use web_service_pratice::entities::user::User;
+    use web_service_pratice::entities::user_entity::User;
 
     #[actix_web::test]
     #[test]

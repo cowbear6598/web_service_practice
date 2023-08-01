@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use mongodb::{Client, Collection};
 use anyhow::{anyhow, Result};
 use crate::{
-    entities::user::User,
+    entities::user_entity::User,
     frameworks::mongo::mongo_constants::DB_NAME,
     adapters::user_trait::UserRepositoryTrait,
     frameworks::mongo::mongo_constants::USER_COLLECTION
