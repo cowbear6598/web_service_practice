@@ -19,7 +19,7 @@ mod user_repository_tests {
 
     fn test_user() -> User {
         User {
-            user_id: "id".to_string(),
+            user_id: "repository".to_string(),
             user_name: "name".to_string(),
             user_email: "email".to_string(),
             user_password: "password".to_string(),
