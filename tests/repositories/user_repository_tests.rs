@@ -7,14 +7,29 @@ mod user_repository_tests {
     };
     use web_service_pratice::entities::user_entity::User;
 
+    async fn setup() -> Box<dyn UserRepositoryTrait> {
+        let client = mongo_connect().await;
+        let repo: Box<dyn UserRepositoryTrait> = Box::new(UserRepository::new(&client));
+
+        repo
+    }
+
     #[actix_web::test]
     #[test]
     pub async fn should_add_user_success() {
-        let client = mongo_connect().await;
-        let repo: Box<dyn UserRepositoryTrait> = Box::new(UserRepository::new(&client));
+        let repo = setup().await;
         let user = test_user();
 
         assert!(repo.add_user(&user).await.is_ok());
+    }
+
+    #[actix_web::test]
+    #[test]
+    pub async fn should_remove_user_success() {
+        let repo = setup().await;
+        let user = test_user();
+
+        assert!(repo.remove_user(user.user_id).await.is_ok());
     }
 
     fn test_user() -> User {

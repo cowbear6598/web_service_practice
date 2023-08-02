@@ -8,6 +8,7 @@ use crate::{
 #[async_trait]
 pub trait UserRepositoryTrait: Send + Sync {
     async fn add_user(&self, user: &User) -> Result<()>;
+    async fn remove_user(&self, user_id: String) -> Result<()>;
 }
 
 #[async_trait]
