@@ -1,31 +1,24 @@
 use crate::{
     adapters::user_trait::{UserRepositoryTrait, UserUseCaseTrait},
     entities::user_entity::User,
+    frameworks::errors::user_error::UserError,
 };
 use anyhow::{Result};
 use async_trait::async_trait;
 use bcrypt::DEFAULT_COST;
 use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
-use crate::frameworks::errors::user_error::UserError;
 
 pub struct UserUseCase {
-    pub user_repo: Box<dyn UserRepositoryTrait>,
+    pub repo: Box<dyn UserRepositoryTrait>,
 }
 
 impl UserUseCase {
-    pub fn new(user_repo: Box<dyn UserRepositoryTrait>) -> UserUseCase {
+    pub fn new(repo: Box<dyn UserRepositoryTrait>) -> UserUseCase {
         UserUseCase {
-            user_repo
+            repo
         }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct AddUserData {
-    pub user_name: String,
-    pub user_email: String,
-    pub user_password: String,
 }
 
 #[async_trait]
@@ -46,6 +39,17 @@ impl UserUseCaseTrait for UserUseCase {
             last_login_time: timestamp,
         };
 
-        self.user_repo.add_user(&user).await
+        self.repo.add_user(&user).await
     }
+
+    async fn remove_user(&self, user_id: String) -> Result<()> {
+        self.repo.remove_user(user_id).await
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AddUserData {
+    pub user_name: String,
+    pub user_email: String,
+    pub user_password: String,
 }

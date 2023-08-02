@@ -14,4 +14,5 @@ pub trait UserRepositoryTrait: Send + Sync {
 #[async_trait]
 pub trait UserUseCaseTrait: Send + Sync {
     async fn add_user(&self, user: AddUserData) -> Result<()>;
+    async fn remove_user(&self, user_id: String) -> Result<()>;
 }

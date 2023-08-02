@@ -7,16 +7,29 @@ mod user_use_case_tests {
     };
     use crate::mocks::user_mocks::MockUserRepository;
 
+    fn setup() -> UserUseCase {
+        let repo = Box::new(MockUserRepository);
+        UserUseCase::new(repo)
+    }
 
     #[actix_web::test]
     #[test]
     async fn should_add_user_success() {
-        let repo = Box::new(MockUserRepository);
-        let use_case = UserUseCase::new(repo);
+        let use_case = setup();
 
         let insert_data = build_add_user_data();
 
         assert!(use_case.add_user(insert_data).await.is_ok());
+    }
+
+    #[actix_web::test]
+    #[test]
+    async fn should_remove_user_success() {
+        let use_case = setup();
+
+        let user_id = "1".to_string();
+
+        assert!(use_case.remove_user(user_id).await.is_ok());
     }
 
     fn build_add_user_data() -> AddUserData {
