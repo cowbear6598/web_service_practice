@@ -4,7 +4,9 @@ use actix_web::{
     App,
     HttpServer,
     web::{Data, scope},
+    middleware::Logger
 };
+use log::info;
 use web_service_pratice::{
     frameworks::mongo::mongo_client::mongo_connect,
     frameworks::web,
@@ -14,6 +16,8 @@ use web_service_pratice::{
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    set_logger();
+
     dotenv::dotenv().ok();
 
     let client = mongo_connect().await;
@@ -21,9 +25,12 @@ async fn main() -> std::io::Result<()> {
 
     let (host, port) = get_address();
 
+    info!("伺服器啟動中: {}-{}", host, port);
+
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(user_service.clone()))
+            .wrap(Logger::default())
             .service(
                 scope("/api/v1")
                     .service(web::user_web::add_user)
@@ -33,6 +40,11 @@ async fn main() -> std::io::Result<()> {
         .bind((host, port))?
         .run()
         .await
+}
+
+fn set_logger() {
+    log4rs::init_file("log4rs.yaml", Default::default())
+        .expect("log4rs.yaml 讀取失敗");
 }
 
 fn get_address() -> (String, u16) {
