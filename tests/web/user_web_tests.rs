@@ -11,19 +11,21 @@ mod user_web_tests {
     };
     use serde_json::json;
     use web_service_pratice::{
-        frameworks::mongo::mongo_client::mongo_connect,
         frameworks::web::user_web::add_user,
         use_cases::user_use_case::AddUserData,
+        frameworks::services::user_service::UserService,
     };
+    use crate::user_mocks::MockUserUseCase;
 
     #[actix_web::test]
     #[test]
     async fn should_add_user_success() {
-        let client = mongo_connect().await;
+        let use_case = Box::new(MockUserUseCase);
+        let service = UserService::new(use_case);
 
         let app = init_service(
             App::new()
-                .app_data(Data::new(client.clone()))
+                .app_data(Data::new(service.clone()))
                 .service(add_user)
         ).await;
 

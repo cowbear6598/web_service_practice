@@ -1,19 +1,7 @@
 #[cfg(test)]
 mod user_service_tests {
-    use async_trait::async_trait;
-    use web_service_pratice::adapters::user_trait::UserUseCaseTrait;
-    use web_service_pratice::use_cases::user_use_case::AddUserData;
-    use anyhow::Result;
     use web_service_pratice::frameworks::services::user_service::{AddUserRequest, UserService};
-
-    struct MockUserUseCase;
-
-    #[async_trait]
-    impl UserUseCaseTrait for MockUserUseCase {
-        async fn add_user(&self, _: AddUserData) -> Result<()> {
-            Ok(())
-        }
-    }
+    use crate::user_mocks::MockUserUseCase;
 
     #[actix_web::test]
     #[test]

@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::{
     adapters::user_trait::UserUseCaseTrait,
     use_cases::user_use_case::AddUserData,
@@ -10,8 +11,10 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub fn new(use_case: Box<dyn UserUseCaseTrait>) -> Self {
-        Self { use_case }
+    pub fn new(use_case: Box<dyn UserUseCaseTrait>) -> Arc<Self> {
+        Arc::new(Self {
+            use_case
+        })
     }
 
     pub async fn add_user(&self, req: AddUserRequest) -> Result<()> {

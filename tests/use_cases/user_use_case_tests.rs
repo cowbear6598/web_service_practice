@@ -1,22 +1,12 @@
 #[cfg(test)]
 mod user_use_case_tests {
     use web_service_pratice::{
-        adapters::user_trait::{UserRepositoryTrait, UserUseCaseTrait},
-        entities::user_entity::User,
+        adapters::user_trait::{UserUseCaseTrait},
         use_cases::user_use_case::UserUseCase,
+        use_cases::user_use_case::AddUserData,
     };
-    use anyhow::Result;
-    use async_trait::async_trait;
-    use web_service_pratice::use_cases::user_use_case::AddUserData;
+    use crate::mocks::user_mocks::MockUserRepository;
 
-    struct MockUserRepository;
-
-    #[async_trait]
-    impl UserRepositoryTrait for MockUserRepository {
-        async fn add_user(&self, _: &User) -> Result<()> {
-            Ok(())
-        }
-    }
 
     #[actix_web::test]
     #[test]
