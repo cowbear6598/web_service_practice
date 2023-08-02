@@ -31,6 +31,10 @@ impl UserService {
 
         self.use_case.add_user(insert_data).await
     }
+
+    pub async fn remove_user(&self, req: RemoveUserRequest) -> Result<()> {
+        self.use_case.remove_user(req.user_id).await
+    }
 }
 
 impl ServiceFactoryTrait for UserService {
@@ -56,4 +60,9 @@ pub struct AddUserRequest {
     pub user_email: String,
     pub user_name: String,
     pub user_password: String,
+}
+
+#[derive(Deserialize)]
+pub struct RemoveUserRequest {
+    pub user_id: String,
 }
