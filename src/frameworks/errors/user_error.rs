@@ -11,7 +11,6 @@ pub enum UserError {
     PasswordError = 1003,
     #[error("密碼加密失敗")]
     PasswordHashFail = 1004,
-
     #[error("新增用戶失敗")]
     AddUserFail = 2001,
 }

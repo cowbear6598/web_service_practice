@@ -2030,6 +2030,7 @@ dependencies = [
 name = "web_service_pratice"
 version = "0.1.0"
 dependencies = [
+ "actix-http",
  "actix-web",
  "anyhow",
  "async-trait",

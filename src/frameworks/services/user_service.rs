@@ -62,7 +62,7 @@ pub struct AddUserRequest {
     pub user_password: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct RemoveUserRequest {
     pub user_id: String,
 }
