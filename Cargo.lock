@@ -2316,6 +2316,7 @@ dependencies = [
  "dotenv",
  "log",
  "log4rs",
+ "mime",
  "mongodb",
  "serde",
  "serde_json",

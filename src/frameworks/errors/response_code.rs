@@ -1,6 +1,7 @@
 pub enum ResponseCode {
     AddUserFail = 1001,
     RemoveUserFail = 1002,
+    UploadAvatarFail = 1003,
 }
 
 impl ResponseCode {
