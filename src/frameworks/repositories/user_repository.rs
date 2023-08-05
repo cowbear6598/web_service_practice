@@ -7,8 +7,8 @@ use crate::{
     frameworks::mongo::mongo_constants::DB_NAME,
     adapters::user_trait::UserRepositoryTrait,
     frameworks::mongo::mongo_constants::USER_COLLECTION,
+    frameworks::errors::user_error::UserError,
 };
-use crate::frameworks::errors::user_error::UserError;
 
 pub struct UserRepository {
     pub collection: Collection<User>,
@@ -26,7 +26,7 @@ impl UserRepository {
 
 #[async_trait]
 impl UserRepositoryTrait for UserRepository {
-    async fn add_user(&self, user: &User) -> Result<()> {
+    async fn add_user(&self, user: User) -> Result<()> {
         self.collection.insert_one(user, None).await
             .map_err(|_| UserError::AlreadyExists)?;
 
