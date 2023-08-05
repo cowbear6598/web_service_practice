@@ -8,6 +8,8 @@ mod user_repository_tests {
     use web_service_pratice::entities::user_entity::User;
 
     async fn setup() -> Box<dyn UserRepositoryTrait> {
+        dotenv::dotenv().ok();
+
         let client = mongo_connect().await;
         let repo: Box<dyn UserRepositoryTrait> = Box::new(UserRepository::new(&client));
 
@@ -20,7 +22,7 @@ mod user_repository_tests {
         let repo = setup().await;
         let user = test_user();
 
-        assert!(repo.add_user(&user).await.is_ok());
+        assert!(repo.add_user(user).await.is_ok());
     }
 
     #[actix_web::test]

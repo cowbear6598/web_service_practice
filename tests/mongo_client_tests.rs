@@ -5,6 +5,8 @@ mod mongo_client_tests {
     #[actix_web::test]
     #[test]
     async fn should_connect_to_mongo_success() {
+        dotenv::dotenv().ok();
+
         let client = mongo_connect().await;
         assert!(client.list_database_names(None, None).await.is_ok());
     }

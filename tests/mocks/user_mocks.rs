@@ -12,7 +12,7 @@ pub struct MockUserRepository;
 
 #[async_trait]
 impl UserRepositoryTrait for MockUserRepository {
-    async fn add_user(&self, _: &User) -> Result<()> {
+    async fn add_user(&self, _: User) -> Result<()> {
         Ok(())
     }
     async fn remove_user(&self, _: String) -> Result<()> { Ok(()) }
