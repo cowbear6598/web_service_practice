@@ -39,6 +39,7 @@ mod user_repository_tests {
             user_id: "repository".to_string(),
             user_name: "name".to_string(),
             user_email: "email".to_string(),
+            avatar_url: "avatar.jpg".to_string(),
             user_password: "password".to_string(),
             user_role: "user".to_string(),
             created_at: "10000".to_string(),

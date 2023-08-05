@@ -56,6 +56,7 @@ impl TryFrom<AddUserData> for User {
             user_id: Uuid::new().to_string(),
             user_name: value.user_name,
             user_email: value.user_email,
+            avatar_url: "".to_string(),
             user_password: hash_password,
             user_role: "user".to_string(),
             created_at: timestamp.clone(),
