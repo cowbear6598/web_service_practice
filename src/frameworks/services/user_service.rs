@@ -23,13 +23,9 @@ impl UserService {
     }
 
     pub async fn add_user(&self, req: AddUserRequest) -> Result<()> {
-        let insert_data = AddUserData {
-            user_email: req.user_email,
-            user_name: req.user_name,
-            user_password: req.user_password,
-        };
+        let data = AddUserData::from(req);
 
-        self.use_case.add_user(insert_data).await
+        self.use_case.add_user(data).await
     }
 
     pub async fn remove_user(&self, req: RemoveUserRequest) -> Result<()> {
@@ -60,6 +56,16 @@ pub struct AddUserRequest {
     pub user_email: String,
     pub user_name: String,
     pub user_password: String,
+}
+
+impl From<AddUserRequest> for AddUserData {
+    fn from(value: AddUserRequest) -> Self {
+        AddUserData {
+            user_email: value.user_email,
+            user_name: value.user_name,
+            user_password: value.user_password,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize)]
