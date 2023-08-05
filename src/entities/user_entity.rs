@@ -1,6 +1,4 @@
-use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
-use crate::use_cases::user_use_case::AddUserData;
 
 #[derive(Serialize, Deserialize)]
 pub struct User {

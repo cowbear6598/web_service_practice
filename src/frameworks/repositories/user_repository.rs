@@ -28,7 +28,7 @@ impl UserRepository {
 impl UserRepositoryTrait for UserRepository {
     async fn add_user(&self, user: User) -> Result<()> {
         self.collection.insert_one(user, None).await
-            .map_err(|_| UserError::AlreadyExists)?;
+            .map_err(|err| UserError::AddUserFail(err.to_string()))?;
 
         Ok(())
     }
@@ -37,7 +37,7 @@ impl UserRepositoryTrait for UserRepository {
         let filter = doc! {"user_id": user_id};
 
         self.collection.delete_one(filter, None).await
-            .map_err(|_| UserError::NotExists)?;
+            .map_err(|err| UserError::RemoveUserFail(err.to_string()))?;
 
         Ok(())
     }
