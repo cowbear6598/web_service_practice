@@ -28,6 +28,10 @@ impl UserService {
         self.use_case.add_user(data).await
     }
 
+    pub async fn upload_avatar(&self) -> Result<()> {
+        todo!()
+    }
+
     pub async fn remove_user(&self, req: RemoveUserRequest) -> Result<()> {
         self.use_case.remove_user(req.user_id).await
     }

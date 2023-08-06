@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use actix_multipart::Multipart;
 use actix_web::{HttpRequest, HttpResponse, post, web};
+use futures_util::TryStreamExt;
 use crate::{
     frameworks::services::user_service::AddUserRequest,
     frameworks::services::user_service::UserService,
@@ -9,6 +10,7 @@ use crate::{
     frameworks::errors::response_code::ResponseCode,
 };
 use crate::frameworks::common::multipart::get_field_name;
+use crate::frameworks::google::cloud_storage::upload_image;
 
 #[post("user/add_user")]
 pub async fn add_user(service: web::Data<Arc<UserService>>, form: web::Json<AddUserRequest>) -> HttpResponse {
@@ -23,11 +25,13 @@ pub async fn upload_avatar(service: web::Data<Arc<UserService>>, req: HttpReques
     let mut avatar_url = String::new();
 
     while let Ok(Some(mut field)) = payload.try_next().await {
-        let field_name = get_field_name(&mut field)
-            .map_err(|err| { return response_error(ResponseCode::UploadAvatarFail.to_u16(), err.to_string()); })?;
+        let field_name = match get_field_name(&mut field) {
+            Ok(field_name) => field_name,
+            Err(err) => return response_error(ResponseCode::UploadAvatarFail.to_u16(), err.to_string()),
+        };
 
         match field_name.as_str() {
-            "avatar_file" => avatar_url =,
+            "avatar_file" => avatar_url = upload_image(field).await.unwrap(),
             _ => return response_error(ResponseCode::UploadAvatarFail.to_u16(), "Invalid field name".to_string()),
         }
     }
