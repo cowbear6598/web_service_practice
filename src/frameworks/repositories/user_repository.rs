@@ -31,9 +31,15 @@ impl UserRepositoryTrait for UserRepository {
         Ok(())
     }
 
-    // async fn upload_avatar(&self, avatar_url: String) -> Result<()> {
-    //     todo!()
-    // }
+    async fn upload_avatar(&self, user_id: String, avatar_url: String) -> Result<()> {
+        let filter = doc! {"user_id": user_id};
+        let update = doc! {"$set": {"avatar_url": avatar_url}};
+
+        self.collection.find_one_and_update(filter, update, None).await
+            .map_err(|err| UserError::UploadAvatarFail(err.to_string()))?;
+
+        Ok(())
+    }
 
     async fn remove_user(&self, user_id: String) -> Result<()> {
         let filter = doc! {"user_id": user_id};

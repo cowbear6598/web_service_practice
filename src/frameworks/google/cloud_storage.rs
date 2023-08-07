@@ -11,8 +11,9 @@ use google_cloud_storage::{
 use shaku::Component;
 use crate::{
     adapters::cloud_storage_trait::CloudStorageTrait,
-    entities::upload_file_entity::UploadFile,
+    entities::upload_file_entity::ImageFile,
 };
+use crate::adapters::upload_file_trait::UploadFileTrait;
 
 #[derive(Component)]
 #[shaku(interface = CloudStorageTrait)]
@@ -22,14 +23,14 @@ pub struct CloudStorage {
 }
 
 impl CloudStorage {
-    pub async fn upload_image(&self, mut field: Field, file: UploadFile) -> Result<String> {
+    pub async fn upload_image(&self, mut field: Field, file: ImageFile) -> Result<String> {
         let mut buffer = vec![];
 
         while let Ok(Some(chunk)) = field.try_next().await {
             buffer.write_all(&chunk)?
         }
 
-        let upload_type = UploadType::Simple(Media::new(file.filename));
+        let upload_type = UploadType::Simple(Media::new("test.png"));
 
         let object = self.client.upload_object(&UploadObjectRequest {
             bucket: self.bucket_name.clone(),
@@ -41,7 +42,28 @@ impl CloudStorage {
 }
 
 #[async_trait]
-impl CloudStorageTrait for CloudStorage {}
+impl CloudStorageTrait for CloudStorage {
+    async fn upload(&self, file: &dyn UploadFileTrait) -> Result<String> {
+        let upload_type = UploadType::Simple(
+            Media::new(file.get_filename())
+        );
+
+        let bucket = format!("{}/{}", self.bucket_name, file.get_upload_dir());
+
+        let upload_req = UploadObjectRequest {
+            bucket,
+            ..Default::default()
+        };
+
+        let object = self.client.upload_object(
+            &upload_req,
+            file.get_file(),
+            &upload_type,
+        ).await?;
+
+        Ok(object.self_link)
+    }
+}
 
 pub async fn cloud_storage_connect() -> CloudStorageParameters {
     let bucket_name = env::var("GCS_BUCKET").

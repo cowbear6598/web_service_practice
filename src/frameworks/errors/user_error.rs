@@ -14,4 +14,6 @@ pub enum UserError {
     AddUserFail(String),
     #[error("移除用戶失敗: {0}")]
     RemoveUserFail(String),
+    #[error("上傳頭像失敗: {0}")]
+    UploadAvatarFail(String),
 }

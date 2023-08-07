@@ -8,7 +8,7 @@ use actix_web::{
 use log::info;
 use web_service_pratice::{
     frameworks::web,
-    frameworks::container::container::build_container
+    frameworks::container::container::build_container,
 };
 
 #[actix_web::main]
@@ -21,14 +21,11 @@ async fn main() -> std::io::Result<()> {
 
     let container = build_container().await;
 
-    // let cloud_storage = CloudStorage::new().await;
-
     info!("伺服器啟動中: {}-{}", host, port);
 
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(container.clone()))
-            // .app_data(Data::new(cloud_storage))
             .wrap(Logger::default())
             .service(
                 scope("/api/v1")

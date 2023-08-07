@@ -27,9 +27,9 @@ impl UserUseCaseTrait for UserUseCase {
         self.repo.add_user(user).await
     }
 
-    // async fn upload_avatar(&self, avatar_url: String) -> Result<()> {
-    //     self.repo.upload_avatar(avatar_url).await
-    // }
+    async fn upload_avatar(&self, user_id: String, avatar_url: String) -> Result<()> {
+        self.repo.upload_avatar(user_id, avatar_url).await
+    }
 
     async fn remove_user(&self, user_id: String) -> Result<()> {
         self.repo.remove_user(user_id).await
