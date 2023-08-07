@@ -2,25 +2,58 @@ use std::env;
 use std::io::Write;
 use actix_multipart::Field;
 use anyhow::Result;
+use async_trait::async_trait;
 use futures_util::TryStreamExt;
-use google_cloud_storage::client::{Client, ClientConfig};
+use google_cloud_storage::{
+    client::{Client, ClientConfig},
+    http::objects::upload::{Media, UploadObjectRequest, UploadType},
+};
+use shaku::Component;
+use crate::{
+    adapters::cloud_storage_trait::CloudStorageTrait,
+    entities::upload_file_entity::UploadFile,
+};
 
-pub async fn upload_image(mut field: Field) -> Result<String> {
-    let mut buffer = vec![];
+#[derive(Component)]
+#[shaku(interface = CloudStorageTrait)]
+pub struct CloudStorage {
+    client: Client,
+    bucket_name: String,
+}
 
-    while let Ok(Some(chunk)) = field.try_next().await {
-        buffer.write_all(&chunk)?
+impl CloudStorage {
+    pub async fn upload_image(&self, mut field: Field, file: UploadFile) -> Result<String> {
+        let mut buffer = vec![];
+
+        while let Ok(Some(chunk)) = field.try_next().await {
+            buffer.write_all(&chunk)?
+        }
+
+        let upload_type = UploadType::Simple(Media::new(file.filename));
+
+        let object = self.client.upload_object(&UploadObjectRequest {
+            bucket: self.bucket_name.clone(),
+            ..Default::default()
+        }, buffer, &upload_type).await?;
+
+        Ok(object.self_link)
     }
+}
 
-    let service_path = env::var("GCS_KEY")?;
-    let bucket_name = env::var("GCS_BUCKET")?;
+#[async_trait]
+impl CloudStorageTrait for CloudStorage {}
 
+pub async fn cloud_storage_connect() -> CloudStorageParameters {
+    let bucket_name = env::var("GCS_BUCKET").
+        expect("請設定 Bucket 環境變數");
 
-    let cliet = Client::default();
+    let config = ClientConfig::default().with_auth().await
+        .expect("請設定 GCS 權限變數");
 
-    let client = Client::default();
+    let client = Client::new(config);
 
-    let result = client.object().create(bucket_name.as_str(), buffer, "test.png", "image/png").await?;
-
-    Ok(result.media_link)
+    CloudStorageParameters {
+        client,
+        bucket_name,
+    }
 }

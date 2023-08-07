@@ -4,9 +4,7 @@ use anyhow::{Result};
 use mongodb::bson::doc;
 use crate::{
     entities::user_entity::User,
-    frameworks::mongo::mongo_constants::DB_NAME,
     adapters::user_trait::UserRepositoryTrait,
-    frameworks::mongo::mongo_constants::USER_COLLECTION,
     frameworks::errors::user_error::UserError,
 };
 
@@ -16,7 +14,7 @@ pub struct UserRepository {
 
 impl UserRepository {
     pub fn new(client: &Client) -> UserRepository {
-        let collection = client.database(DB_NAME).collection(USER_COLLECTION);
+        let collection = client.database("user").collection("user");
 
         UserRepository {
             collection
@@ -32,6 +30,10 @@ impl UserRepositoryTrait for UserRepository {
 
         Ok(())
     }
+
+    // async fn upload_avatar(&self, avatar_url: String) -> Result<()> {
+    //     todo!()
+    // }
 
     async fn remove_user(&self, user_id: String) -> Result<()> {
         let filter = doc! {"user_id": user_id};

@@ -1,39 +1,39 @@
 use std::env;
-use std::sync::Arc;
 use actix_web::{
     App,
     HttpServer,
     web::{Data, scope},
-    middleware::Logger
+    middleware::Logger,
 };
 use log::info;
 use web_service_pratice::{
-    frameworks::mongo::mongo_client::mongo_connect,
     frameworks::web,
-    frameworks::services::user_service::UserService,
-    frameworks::services::factory_trait::get_service,
+    frameworks::container::container::build_container
 };
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    set_logger();
-
     dotenv::dotenv().ok();
 
-    let client = mongo_connect().await;
-    let user_service: Arc<UserService> = get_service::<UserService>(&client);
+    set_logger();
 
     let (host, port) = get_address();
+
+    let container = build_container().await;
+
+    // let cloud_storage = CloudStorage::new().await;
 
     info!("伺服器啟動中: {}-{}", host, port);
 
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(user_service.clone()))
+            .app_data(Data::new(container.clone()))
+            // .app_data(Data::new(cloud_storage))
             .wrap(Logger::default())
             .service(
                 scope("/api/v1")
                     .service(web::user_web::add_user)
+                    // .service(web::user_web::upload_avatar)
                     .service(web::user_web::remove_user)
             )
     })
