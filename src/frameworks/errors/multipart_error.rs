@@ -2,6 +2,10 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum MultipartError {
-    #[error("無法取得欄位名稱")]
-    FieldNameGetFail,
+    #[error("欄位名稱不允許")]
+    FieldNameNotValid,
+    #[error("檔案大小取得失敗")]
+    ContentLengthGetFailed,
+    #[error("檔案類型取得失敗")]
+    ContentTypeGetFailed,
 }

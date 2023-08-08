@@ -30,7 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 scope("/api/v1")
                     .service(web::user_web::add_user)
-                    // .service(web::user_web::upload_avatar)
+                    .service(web::user_web::upload_avatar)
                     .service(web::user_web::remove_user)
             )
     })

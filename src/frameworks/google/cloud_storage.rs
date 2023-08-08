@@ -1,9 +1,6 @@
 use std::env;
-use std::io::Write;
-use actix_multipart::Field;
 use anyhow::Result;
 use async_trait::async_trait;
-use futures_util::TryStreamExt;
 use google_cloud_storage::{
     client::{Client, ClientConfig},
     http::objects::upload::{Media, UploadObjectRequest, UploadType},
@@ -11,9 +8,8 @@ use google_cloud_storage::{
 use shaku::Component;
 use crate::{
     adapters::cloud_storage_trait::CloudStorageTrait,
-    entities::upload_file_entity::ImageFile,
+    adapters::upload_file_trait::UploadFileTrait,
 };
-use crate::adapters::upload_file_trait::UploadFileTrait;
 
 #[derive(Component)]
 #[shaku(interface = CloudStorageTrait)]
@@ -22,33 +18,17 @@ pub struct CloudStorage {
     bucket_name: String,
 }
 
-impl CloudStorage {
-    pub async fn upload_image(&self, mut field: Field, file: ImageFile) -> Result<String> {
-        let mut buffer = vec![];
-
-        while let Ok(Some(chunk)) = field.try_next().await {
-            buffer.write_all(&chunk)?
-        }
-
-        let upload_type = UploadType::Simple(Media::new("test.png"));
-
-        let object = self.client.upload_object(&UploadObjectRequest {
-            bucket: self.bucket_name.clone(),
-            ..Default::default()
-        }, buffer, &upload_type).await?;
-
-        Ok(object.self_link)
-    }
-}
-
 #[async_trait]
 impl CloudStorageTrait for CloudStorage {
     async fn upload(&self, file: &dyn UploadFileTrait) -> Result<String> {
+        file.validate()?;
+
         let upload_type = UploadType::Simple(
             Media::new(file.get_filename())
         );
 
-        let bucket = format!("{}/{}", self.bucket_name, file.get_upload_dir());
+        // let bucket = format!("{}/{}", self.bucket_name, file.get_upload_dir());
+        let bucket = self.bucket_name.clone();
 
         let upload_req = UploadObjectRequest {
             bucket,
