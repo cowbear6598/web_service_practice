@@ -8,4 +8,8 @@ pub enum MultipartError {
     ContentLengthGetFailed,
     #[error("檔案類型取得失敗")]
     ContentTypeGetFailed,
+    #[error("文字大小超過限制")]
+    TextSizeTooBig,
+    #[error("欄位缺少資料")]
+    FieldMissing,
 }

@@ -6,7 +6,7 @@ use crate::adapters::mongo_trait::MongoClientTrait;
 #[derive(Component)]
 #[shaku(interface = MongoClientTrait)]
 pub struct MongoClient {
-    client: Client,
+    pub client: Client,
 }
 
 impl MongoClientTrait for MongoClient {}

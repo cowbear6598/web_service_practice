@@ -1,7 +1,8 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 use anyhow::{anyhow, Result};
 use actix_multipart::Multipart;
-use actix_web::{HttpRequest, HttpResponse, post, web};
+use actix_web::{HttpResponse, post, web};
 use futures_util::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use shaku::HasComponent;
@@ -12,10 +13,9 @@ use crate::{
     frameworks::container::container::Container,
     adapters::user_trait::UserUseCaseTrait,
     adapters::cloud_storage_trait::CloudStorageTrait,
-    frameworks::common::multipart::get_field_name,
+    frameworks::errors::multipart_error::MultipartError,
+    frameworks::multipart::multipart_handler::{get_field_name, Method, MultipartHandler},
 };
-use crate::frameworks::common::multipart::build_image_file;
-use crate::frameworks::errors::multipart_error::MultipartError;
 
 #[post("user/add_user")]
 pub async fn add_user(container: web::Data<Arc<Container>>, form: web::Json<AddUserRequest>) -> HttpResponse {
@@ -31,11 +31,11 @@ pub async fn add_user(container: web::Data<Arc<Container>>, form: web::Json<AddU
 }
 
 #[post("user/upload_avatar")]
-pub async fn upload_avatar(container: web::Data<Arc<Container>>, req: HttpRequest, payload: Multipart) -> HttpResponse {
+pub async fn upload_avatar(container: web::Data<Arc<Container>>, payload: Multipart) -> HttpResponse {
     let user_use_case: &dyn UserUseCaseTrait = container.resolve_ref();
     let cloud_storage: &dyn CloudStorageTrait = container.resolve_ref();
 
-    let avatar_url = match handle_multipart(cloud_storage, "123".to_string(), &req, payload).await {
+    let avatar_url = match handle_multipart(cloud_storage, payload).await {
         Ok(avatar_url) => avatar_url,
         Err(err) => return response_error(ResponseCode::UploadAvatarFail.to_u16(), err.to_string()),
     };
@@ -58,22 +58,25 @@ pub async fn remove_user(container: web::Data<Arc<Container>>, form: web::Json<R
     }
 }
 
-async fn handle_multipart(cloud_storage: &dyn CloudStorageTrait, user_id: String, req: &HttpRequest, mut payload: Multipart) -> Result<String> {
-    let mut avatar_url = String::from("");
+async fn handle_multipart(cloud_storage: &dyn CloudStorageTrait, mut payload: Multipart) -> Result<String> {
+    let multipart_handler = MultipartHandler::new(cloud_storage)
+        .add_field("avatar_file", Method::Image, None, Some("user".to_string()));
+
+    let mut insert_data: HashMap<String, String> = HashMap::new();
 
     while let Ok(Some(mut field)) = payload.try_next().await {
         let field_name = get_field_name(&mut field)?;
-
-        match field_name.as_str() {
-            "avatar_file" => {
-                let image_file = build_image_file(Some(user_id.clone()), req, "user".to_string(), &mut field).await?;
-                avatar_url = cloud_storage.upload(&image_file).await?;
-            }
-            _ => return Err(anyhow!(MultipartError::FieldNameNotValid)),
-        }
+        let result = multipart_handler.handle(field_name.as_str(), field).await?;
+        insert_data.insert(field_name, result);
     }
 
-    Ok(avatar_url)
+    if !multipart_handler.has_same_field(&insert_data) {
+        return Err(anyhow!(MultipartError::FieldMissing));
+    }
+
+    Ok(
+        insert_data.get("avatar_file").unwrap().to_string()
+    )
 }
 
 
