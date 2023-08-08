@@ -12,4 +12,6 @@ pub enum MultipartError {
     TextSizeTooBig,
     #[error("欄位缺少資料")]
     FieldMissing,
+    #[error("檔案資料缺失")]
+    DataNotFound,
 }

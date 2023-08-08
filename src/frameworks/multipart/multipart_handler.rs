@@ -7,19 +7,16 @@ use mongodb::bson::Uuid;
 use crate::{
     adapters::cloud_storage_trait::CloudStorageTrait,
     entities::image_file_entity::ImageFile,
-    frameworks::errors::file_error::FileError,
     frameworks::errors::multipart_error::MultipartError,
 };
 
 const MAX_TEXT_SIZE: usize = 1 * 1024;
 
-#[derive(Clone)]
 pub enum Method {
     Text,
     Image,
 }
 
-#[derive(Clone)]
 struct FieldInfo {
     method: Method,
     filename: Option<String>,
@@ -68,7 +65,7 @@ impl<'a> MultipartHandler<'a> {
 
         let result = match field_info.method {
             Method::Text => self.process_text(&mut field).await?,
-            Method::Image => self.process_image(field_info.clone(), &mut field).await?,
+            Method::Image => self.process_image(&field_info, &mut field).await?,
         };
 
         Ok(result)
@@ -86,15 +83,15 @@ impl<'a> MultipartHandler<'a> {
         Ok(text)
     }
 
-    async fn process_image(&self, field_info: FieldInfo, field: &mut Field) -> Result<String> {
+    async fn process_image(&self, field_info: &FieldInfo, field: &mut Field) -> Result<String> {
         let file_type = field.content_type()
             .ok_or(anyhow!(MultipartError::ContentTypeGetFailed))?
             .clone();
 
-        let filename = field_info.filename
+        let filename = field_info.filename.clone()
             .unwrap_or(Uuid::new().to_string());
-        let upload_dir = field_info.upload_dir
-            .ok_or(anyhow!(FileError::UploadDirEmpty))?;
+        let upload_dir = field_info.upload_dir.clone()
+            .ok_or(anyhow!(MultipartError::DataNotFound))?;
 
         let buffer = self.get_field_buffer(field, 1024 * 500).await?;
 
