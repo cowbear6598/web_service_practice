@@ -1,6 +1,6 @@
 # Read Me
 
-- 這是一個 actix_web + mongo 的練習專案，會盡然把所有功能都練習到
+- 這是一個 actix_web + mongo + google cloud storage 的練習專案，會盡量把所有功能都練習到
 
 ## 環境
 
@@ -8,4 +8,6 @@
 
 ## 目前已有範例
 
-- Post + Json
+- Json
+- Multipart
+- Google Cloud Storage
