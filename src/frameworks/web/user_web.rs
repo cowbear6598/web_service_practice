@@ -1,9 +1,7 @@
-use std::collections::HashMap;
 use std::sync::Arc;
-use anyhow::{anyhow, Result};
+use anyhow::{Result};
 use actix_multipart::Multipart;
 use actix_web::{HttpResponse, post, web};
-use futures_util::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use shaku::HasComponent;
 use crate::{
@@ -13,8 +11,8 @@ use crate::{
     frameworks::container::container::Container,
     adapters::user_trait::UserUseCaseTrait,
     adapters::cloud_storage_trait::CloudStorageTrait,
-    frameworks::errors::multipart_error::MultipartError,
-    frameworks::multipart::multipart_handler::{get_field_name, Method, MultipartHandler},
+    frameworks::multipart::multipart_handler::{Method, MultipartHandler},
+    adapters::hashmap_trait::HashmapExtensionTrait,
 };
 
 #[post("user/add_user")]
@@ -58,24 +56,14 @@ pub async fn remove_user(container: web::Data<Arc<Container>>, form: web::Json<R
     }
 }
 
-async fn handle_multipart(cloud_storage: &dyn CloudStorageTrait, mut payload: Multipart) -> Result<String> {
+async fn handle_multipart(cloud_storage: &dyn CloudStorageTrait, payload: Multipart) -> Result<String> {
     let multipart_handler = MultipartHandler::new(cloud_storage)
-        .add_field("avatar_file", Method::Image, None, Some("user".to_string()));
+        .add_field("avatar_url", Method::Image, None, Some("user".to_string()));
 
-    let mut insert_data: HashMap<String, String> = HashMap::new();
-
-    while let Ok(Some(mut field)) = payload.try_next().await {
-        let field_name = get_field_name(&mut field)?;
-        let result = multipart_handler.handle(field_name.as_str(), field).await?;
-        insert_data.insert(field_name, result);
-    }
-
-    if !multipart_handler.has_same_field(&insert_data) {
-        return Err(anyhow!(MultipartError::FieldMissing));
-    }
+    let mut data = multipart_handler.handle(payload).await?;
 
     Ok(
-        insert_data.get("avatar_file").unwrap().to_string()
+        data.get_result("avatar_url")?
     )
 }
 

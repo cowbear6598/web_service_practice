@@ -6,3 +6,5 @@ pub mod google;
 pub mod container;
 pub mod multipart;
 
+pub mod extensions;
+

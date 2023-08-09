@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::io::Write;
-use actix_multipart::Field;
+use actix_multipart::{Field, Multipart};
 use anyhow::{anyhow, Result};
 use futures_util::{TryStreamExt};
 use mongodb::bson::Uuid;
@@ -45,21 +45,25 @@ impl<'a> MultipartHandler<'a> {
         self
     }
 
-    pub fn has_same_field(&self, map: &HashMap<String, String>) -> bool {
-        if self.fields.len() != map.len() {
-            return false;
+    pub async fn handle(&self, mut payload: Multipart) -> Result<HashMap<String, String>> {
+        let mut data: HashMap<String, String> = HashMap::new();
+
+        while let Ok(Some(mut field)) = payload.try_next().await {
+            let field_name = self.get_field_name(&mut field)?;
+
+            let result = self.process_field(field_name.as_str(), field).await?;
+
+            data.insert(field_name, result);
         }
 
-        for key in map.keys() {
-            if !self.fields.contains_key(key) {
-                return false;
-            }
+        if !self.check_field_exist(&data) {
+            return Err(anyhow!(MultipartError::FieldMissing));
         }
 
-        true
+        Ok(data)
     }
 
-    pub async fn handle(&self, field_name: &str, mut field: Field) -> Result<String> {
+    async fn process_field(&self, field_name: &str, mut field: Field) -> Result<String> {
         let field_info = self.fields.get(field_name)
             .ok_or(anyhow!(MultipartError::FieldNameNotValid))?;
 
@@ -90,6 +94,7 @@ impl<'a> MultipartHandler<'a> {
 
         let filename = field_info.filename.clone()
             .unwrap_or(Uuid::new().to_string());
+
         let upload_dir = field_info.upload_dir.clone()
             .ok_or(anyhow!(MultipartError::DataNotFound))?;
 
@@ -107,6 +112,28 @@ impl<'a> MultipartHandler<'a> {
         Ok(img_url)
     }
 
+    pub fn check_field_exist(&self, map: &HashMap<String, String>) -> bool {
+        if self.fields.len() != map.len() {
+            return false;
+        }
+
+        for key in map.keys() {
+            if !self.fields.contains_key(key) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    fn get_field_name(&self, field: &Field) -> Result<String> {
+        let content_disposition = field.content_disposition().clone();
+        let field_name = content_disposition.get_name()
+            .ok_or(anyhow!(MultipartError::FieldNameNotValid))?;
+
+        Ok(field_name.to_string())
+    }
+
     async fn get_field_buffer(&self, field: &mut Field, capacity: usize) -> Result<Vec<u8>> {
         let mut buffer = Vec::with_capacity(capacity);
 
@@ -116,12 +143,4 @@ impl<'a> MultipartHandler<'a> {
 
         Ok(buffer)
     }
-}
-
-pub fn get_field_name(field: &Field) -> Result<String> {
-    let content_disposition = field.content_disposition().clone();
-    let field_name = content_disposition.get_name()
-        .ok_or(anyhow!(MultipartError::FieldNameNotValid))?;
-
-    Ok(field_name.to_string())
 }
