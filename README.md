@@ -8,6 +8,16 @@
 
 ## 目前已有範例
 
+### actix-web
+
 - Json
 - Multipart
-- Google Cloud Storage
+
+### google cloud storage
+
+- upload
+
+### mongodb
+
+- insert
+- delete
