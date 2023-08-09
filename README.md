@@ -4,20 +4,25 @@
 
 ## 環境
 
-- .env 檔需設置 DB_URI、SERVER_HOST、SERVER_PORT、GOOGLE_APPLICATION_CREDENTIALS、GCS_BUCKET
+- .env 檔需設置: 
+  - DB_URI：連線到 MongoDB 
+  - SERVER_HOST：伺服器的 IP
+  - SERVER_PORT：伺服器的 Port
+  - GOOGLE_APPLICATION_CREDENTIALS：Service Account 的認證檔案路徑
+  - GCS_BUCKET：Google Cloud Storage 的 Bucket 名稱
 
 ## 目前已有範例
 
-### actix-web
+### Actix Web
 
 - Json
 - Multipart
 
-### google cloud storage
+### Google Cloud Storage
 
 - upload
 
-### mongodb
+### MongoDB
 
 - insert
 - delete
