@@ -4,12 +4,13 @@
 
 ## 環境
 
-- .env 檔需設置: 
-  - DB_URI：連線到 MongoDB 
-  - SERVER_HOST：伺服器的 IP
-  - SERVER_PORT：伺服器的 Port
-  - GOOGLE_APPLICATION_CREDENTIALS：Service Account 的認證檔案路徑
-  - GCS_BUCKET：Google Cloud Storage 的 Bucket 名稱
+- .env 檔需設置:
+    - DB_URI：連線到 MongoDB
+    - SERVER_HOST：伺服器的 IP
+    - SERVER_PORT：伺服器的 Port
+    - GOOGLE_APPLICATION_CREDENTIALS：Service Account 的認證檔案路徑
+    - GCS_BUCKET：Google Cloud Storage 的 Bucket 名稱
+    - TOKEN_SECRET：JWT 的加密字串
 
 ## 目前已有範例
 

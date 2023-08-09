@@ -4,21 +4,45 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# web framework
 actix-web = "4.3.1"
 actix-http = "3.3.1"
 actix-multipart = "0.6.0"
+
+# database
 mongodb = "2.6.0"
+
+# Serialization
 serde = "1.0.180"
 serde_json = "1.0.104"
+
+# Async
 async-trait = "0.1.72"
+futures-util = "0.3.28"
+
+# Error handling
 thiserror = "1.0.44"
 anyhow = "1.0.72"
+
+# Time
 chrono = "0.4.26"
+
+# Hash
 bcrypt = "0.15.0"
+
+# Env
 dotenv = "0.15.0"
+
+# Log
 log = "0.4.19"
 log4rs = "1.2.0"
-mime = "0.3.17"
+
+# Google Cloud Storage
 google-cloud-storage = "0.13.0"
-futures-util = "0.3.28"
+mime = "0.3.17"
+
+# Injector
 shaku = "0.6.1"
+
+# JWT
+jsonwebtoken = "8.3.0"
