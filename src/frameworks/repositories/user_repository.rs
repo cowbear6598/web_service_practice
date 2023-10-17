@@ -1,12 +1,12 @@
 use async_trait::async_trait;
 use mongodb::{Client, Collection};
-use anyhow::{Result};
+use anyhow::Result;
 use mongodb::bson::doc;
 use crate::{
-    entities::user_entity::User,
     adapters::user_trait::UserRepositoryTrait,
     frameworks::errors::user_error::UserError,
 };
+use crate::entities::user::user::User;
 
 pub struct UserRepository {
     pub collection: Collection<User>,

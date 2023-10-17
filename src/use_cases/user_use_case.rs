@@ -1,6 +1,5 @@
 use crate::{
     adapters::user_trait::{UserRepositoryTrait, UserUseCaseTrait},
-    entities::user_entity::User,
     frameworks::errors::user_error::UserError,
     frameworks::repositories::user_repository::UserRepository,
     use_cases::factory_trait::UseCaseFactory,
@@ -12,6 +11,7 @@ use mongodb::bson::Uuid;
 use mongodb::Client;
 use serde::{Deserialize, Serialize};
 use shaku::Component;
+use crate::entities::user::user::User;
 
 #[derive(Component)]
 #[shaku(interface = UserUseCaseTrait)]

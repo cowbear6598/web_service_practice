@@ -1,10 +1,8 @@
 use async_trait::async_trait;
 use anyhow::Result;
 use shaku::Interface;
-use crate::{
-    entities::user_entity::User,
-    use_cases::user_use_case::AddUserData,
-};
+use crate::use_cases::user_use_case::AddUserData;
+use crate::entities::user::user::User;
 
 #[async_trait]
 pub trait UserRepositoryTrait: Send + Sync {
