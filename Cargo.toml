@@ -47,3 +47,6 @@ shaku = "0.6.1"
 
 # JWT
 jsonwebtoken = "9.2.0"
+
+[dev-dependencies]
+mockall = "0.12.1"
