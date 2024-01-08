@@ -18,7 +18,7 @@ impl TryFrom<RegisterDto> for User {
     fn try_from(value: RegisterDto) -> Result<Self, Self::Error> {
         let uid = Uuid::new().to_string();
         let hash_password = bcrypt::hash(value.password, bcrypt::DEFAULT_COST)
-            .map_err(|err| anyhow!(UserError::PasswordNotMatch))?;
+            .map_err(|_| anyhow!(UserError::PasswordNotMatch))?;
 
         Ok(User {
             uid,

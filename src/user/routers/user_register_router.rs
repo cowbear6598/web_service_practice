@@ -14,7 +14,7 @@ pub async fn execute(container: Data<Arc<Container>>, form: Json<RegisterDto>) -
 
     let req_data = form.into_inner();
 
-    match user_use_case.register(req_data) {
+    match user_use_case.register(req_data).await {
         Ok(_) => HttpResponse::Ok().finish(),
         Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
     }
