@@ -49,5 +49,4 @@ shaku = "0.6.1"
 jsonwebtoken = "9.2.0"
 
 [dev-dependencies]
-mockall = "0.12.1"
-serial_test = "2.0.0"
+serial_test = "3.0.0"

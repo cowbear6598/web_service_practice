@@ -5,7 +5,7 @@ use web_service_pratice::{
 
 use crate::{
     common::fake_data::fake_register_dto,
-    common::mock::user_mock::MockUserRepositoryTrait,
+    common::mocks::user_mock::MockUserRepositoryTrait,
 };
 
 #[actix_rt::test]
