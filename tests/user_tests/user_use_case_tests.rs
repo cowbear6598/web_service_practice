@@ -1,14 +1,12 @@
-use async_trait::async_trait;
-
 use web_service_pratice::{
-    user::entities::user::User,
-    user::repositories::user_repository::UserRepositoryTrait,
     user::use_cases::user_use_case::UserUseCase,
     user::use_cases::user_use_case_trait::UserUseCaseTrait,
 };
 
-use crate::common::fake_data::fake_register_dto;
-use anyhow::Result;
+use crate::{
+    common::fake_data::fake_register_dto,
+    common::mock::user_mock::MockUserRepositoryTrait,
+};
 
 #[actix_rt::test]
 async fn should_register_successful() {
@@ -21,13 +19,4 @@ async fn should_register_successful() {
     let result = user_use_case.register(register_dto).await;
 
     assert!(result.is_ok());
-}
-
-struct MockUserRepositoryTrait;
-
-#[async_trait]
-impl UserRepositoryTrait for MockUserRepositoryTrait {
-    async fn register(&self, _: User) -> Result<()> {
-        Ok(())
-    }
 }

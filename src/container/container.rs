@@ -8,7 +8,6 @@ use crate::{
 };
 
 pub struct Container {
-    pub mongo_client: MongoClient,
     pub user_use_case: Box<dyn UserUseCaseTrait>,
 }
 
@@ -19,7 +18,6 @@ pub async fn create_container() -> Arc<Container> {
     let user_use_case = UserUseCase::new(user_repo);
 
     let container = Container {
-        mongo_client,
         user_use_case,
     };
 

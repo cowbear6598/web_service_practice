@@ -5,6 +5,8 @@ use actix_web::web::{Data, Json};
 
 use crate::{
     container::container::Container,
+    response::response_empty::response_empty,
+    response::response_error::response_error,
     user::types::register_dto::RegisterDto,
 };
 
@@ -15,7 +17,7 @@ pub async fn execute(container: Data<Arc<Container>>, form: Json<RegisterDto>) -
     let req_data = form.into_inner();
 
     match user_use_case.register(req_data).await {
-        Ok(_) => HttpResponse::Ok().finish(),
-        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+        Ok(_) => response_empty(),
+        Err(err) => response_error(101, err.to_string()),
     }
 }
