@@ -2,4 +2,5 @@ pub mod entities;
 pub mod types;
 pub mod error;
 pub mod routers;
-mod repositories;
+pub mod repositories;
+pub mod use_cases;

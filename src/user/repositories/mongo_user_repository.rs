@@ -23,11 +23,12 @@ impl UserRepositoryTrait for MongoUserRepository {
 }
 
 impl MongoUserRepository {
-    pub fn new(client: &Client) -> Self {
+    pub fn new(client: &Client) -> Box<Self> {
         let db_name = env::var("DB_NAME").expect("請設定 DB_NAME 環境變數");
+        let coll = client.database(&db_name).collection("user");
 
-        Self {
-            coll: client.database(&db_name).collection("user"),
-        }
+        Box::new(Self {
+            coll,
+        })
     }
 }
