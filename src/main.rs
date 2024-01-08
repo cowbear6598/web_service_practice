@@ -1,15 +1,14 @@
 use std::env;
+
 use actix_web::{
     App,
     HttpServer,
-    web::{Data, scope},
     middleware::Logger,
+    web::{Data, scope},
 };
 use log::info;
-use web_service_pratice::{
-    frameworks::web,
-    frameworks::container::container::build_container,
-};
+
+use web_service_pratice::container::container::create_container;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -19,7 +18,7 @@ async fn main() -> std::io::Result<()> {
 
     let (host, port) = get_address();
 
-    let container = build_container().await;
+    let container = create_container().await;
 
     info!("伺服器啟動中: {}-{}", host, port);
 
@@ -29,9 +28,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .service(
                 scope("/api/v1")
-                    .service(web::user_web::add_user)
-                    .service(web::user_web::upload_avatar)
-                    .service(web::user_web::remove_user)
+                    .service(web_service_pratice::user::routers::register)
             )
     })
         .bind((host, port))?
