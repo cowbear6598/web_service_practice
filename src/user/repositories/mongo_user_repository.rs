@@ -3,6 +3,7 @@ use std::env;
 use anyhow::Result;
 use async_trait::async_trait;
 use mongodb::{Client, Collection};
+use mongodb::bson::doc;
 
 use crate::{
     user::entities::user::User,
@@ -17,6 +18,16 @@ pub struct MongoUserRepository {
 impl UserRepositoryTrait for MongoUserRepository {
     async fn register(&self, user: User) -> Result<()> {
         self.coll.insert_one(user, None).await?;
+
+        Ok(())
+    }
+
+    async fn remove(&self, email: String) -> Result<()> {
+        let filter = doc! {
+            "email": email
+        };
+
+        self.coll.delete_one(filter, None).await?;
 
         Ok(())
     }

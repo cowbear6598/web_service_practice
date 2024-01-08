@@ -19,6 +19,10 @@ impl UserUseCaseTrait for UserUseCase {
 
         self.repo.register(user).await
     }
+
+    async fn remove(&self, email: String) -> Result<()> {
+        self.repo.remove(email).await
+    }
 }
 
 impl UserUseCase {
