@@ -10,7 +10,7 @@ use crate::{
 #[automock]
 #[async_trait]
 pub trait UserRepositoryTrait: Send + Sync {
-    async fn find(&self, dto: &FindDto) -> Result<Option<User>>;
+    async fn find(&self, dto: &FindDto) -> Result<User>;
 
     async fn register(&self, user: User) -> Result<()>;
 

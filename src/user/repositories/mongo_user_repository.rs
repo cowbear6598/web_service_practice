@@ -11,6 +11,7 @@ use crate::{
     user::repositories::user_repository::UserRepositoryTrait,
     user::types::find_dto::FindDto,
 };
+use crate::user::error::user_error::UserError;
 
 pub struct MongoUserRepository {
     pub coll: Collection<User>,
@@ -18,7 +19,7 @@ pub struct MongoUserRepository {
 
 #[async_trait]
 impl UserRepositoryTrait for MongoUserRepository {
-    async fn find(&self, dto: &FindDto) -> Result<Option<User>> {
+    async fn find(&self, dto: &FindDto) -> Result<User> {
         let mut filter = doc! {};
 
         if let Some(email) = &dto.email {
@@ -26,7 +27,8 @@ impl UserRepositoryTrait for MongoUserRepository {
         }
 
         let user = self.coll.find_one(filter, None).await
-            .map_err(|err| anyhow!(MongoError::Exception(err.to_string())))?;
+            .map_err(|err| anyhow!(MongoError::Exception(err.to_string())))?
+            .ok_or(anyhow!(UserError::UserNotFound))?;
 
         Ok(user)
     }

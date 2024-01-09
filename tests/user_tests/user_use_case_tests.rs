@@ -3,8 +3,29 @@ use web_service_pratice::{
     user::use_cases::user_use_case::UserUseCase,
     user::use_cases::user_use_case_trait::UserUseCaseTrait,
 };
+use web_service_pratice::user::types::find_dto::FindDto;
 
-use crate::common::fake_data::fake_register_dto;
+use crate::common::fake_data::{fake_register_dto, fake_user};
+
+#[actix_rt::test]
+async fn test_find_operation_successful() {
+    let mut mock_use_repo = Box::new(MockUserRepositoryTrait::new());
+
+    mock_use_repo.expect_find()
+        .once()
+        .returning(|_| Ok(fake_user()));
+
+    let user_use_case = UserUseCase::new(mock_use_repo);
+
+    let find_dto = FindDto {
+        email: Some("test@gmail.com".to_string()),
+    };
+
+    let result = user_use_case.find(&find_dto).await.unwrap();
+
+    assert_eq!(result.email, "test@gmail.com");
+    assert_eq!(result.name, "test");
+}
 
 #[actix_rt::test]
 async fn test_register_operation_successful() {
@@ -24,7 +45,7 @@ async fn test_register_operation_successful() {
 }
 
 #[actix_rt::test]
-async fn should_remove_user_successful() {
+async fn test_remove_user_operation_successful() {
     let mut mock_user_repo = Box::new(MockUserRepositoryTrait::new());
 
     mock_user_repo.expect_remove()

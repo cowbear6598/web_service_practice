@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 
 use crate::{
@@ -7,6 +7,9 @@ use crate::{
     user::types::register_dto::RegisterDto,
     user::use_cases::user_use_case_trait::UserUseCaseTrait,
 };
+use crate::user::error::user_error::UserError;
+use crate::user::types::find_dto::FindDto;
+use crate::user::types::user_response_dto::UserResponseDto;
 
 pub struct UserUseCase {
     pub repo: Box<dyn UserRepositoryTrait>,
@@ -22,6 +25,12 @@ impl UserUseCaseTrait for UserUseCase {
 
     async fn remove(&self, email: String) -> Result<()> {
         self.repo.remove(email).await
+    }
+
+    async fn find(&self, dto: &FindDto) -> Result<UserResponseDto> {
+        let user = self.repo.find(dto).await?;
+
+        Ok(UserResponseDto::from(user))
     }
 }
 
