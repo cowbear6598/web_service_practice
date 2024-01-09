@@ -1,9 +1,17 @@
-use actix_web::{App, test};
-use actix_web::web::Data;
+use std::sync::Arc;
+use actix_web::{
+    App,
+    test,
+    web::Data
+};
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use serial_test::serial;
 
-use web_service_pratice::container::container::create_container;
+use web_service_pratice::{
+    container::container::{Container, create_container},
+    user::types::user_response_dto::UserResponseDto
+};
 
 use crate::{
     common::functions::response_to_string,
@@ -12,9 +20,40 @@ use crate::{
 
 #[actix_rt::test]
 #[serial]
+async fn test_find_success() {
+    let container = setup().await;
+
+    let app = test::init_service(
+        App::new()
+            .app_data(Data::new(container.clone()))
+            .service(web_service_pratice::user::routers::register)
+            .service(web_service_pratice::user::routers::find)
+    ).await;
+
+    let req = create_register_request();
+    let _ = test::call_service(&app, req).await;
+    let req = test::TestRequest::get()
+        .uri("/user/find")
+        .param("email", "test@gmail.com")
+        .to_request();
+
+    let response = test::call_service(&app, req).await;
+
+    assert_eq!(200, response.status().as_u16());
+
+    let body = response_to_string(response).await;
+    let user = serde_json::from_str::<UserDtoResponse>(&body).unwrap();
+
+    assert_eq!("test@gmail.com", user.data.email);
+    assert_eq!("test", user.data.name);
+
+    container.user_use_case.remove("test@gmail.com".to_string()).await.expect("移除使用者失敗");
+}
+
+#[actix_rt::test]
+#[serial]
 async fn test_register_success() {
-    dotenv::dotenv().ok();
-    let container = create_container().await;
+    let container = setup().await;
 
     let app = test::init_service(
         App::new()
@@ -34,4 +73,17 @@ async fn test_register_success() {
         ).to_string(), body);
 
     container.user_use_case.remove("test@gmail.com".to_string()).await.expect("移除使用者失敗");
+}
+
+async fn setup() -> Arc<Container> {
+    dotenv::dotenv().ok();
+    let container = create_container().await;
+    container
+}
+
+#[derive(Serialize, Deserialize)]
+struct UserDtoResponse {
+    status: u16,
+    message: String,
+    data: UserResponseDto,
 }
