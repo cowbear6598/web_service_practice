@@ -13,10 +13,18 @@
 
 ## 目前已有範例
 
+### JsonWebToken
+
+- encode
+- decode
+
 ### Actix Web
 
 - Json
+- Query
 
 ### MongoDB
 
-- insert
+- insert_one
+- find_one
+- delete_one
