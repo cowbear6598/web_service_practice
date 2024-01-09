@@ -11,8 +11,45 @@ use web_service_pratice::{
 
 use crate::{
     common::functions::response_to_string,
-    common::requests::user_request::create_register_request
+    common::requests::user_request::create_register_request,
+    common::fake_data::fake_user_response_dto
 };
+
+async fn test_find_success() {
+    let mut mock_user_use_case = Box::new(
+        MockUserUseCaseTrait::new()
+    );
+
+    mock_user_use_case.expect_find()
+        .once()
+        .returning(|_| Ok(fake_user_response_dto()));
+
+    let container = create_container(mock_user_use_case);
+
+    let app = test::init_service(
+        App::new()
+            .app_data(Data::new(container.clone()))
+            .service(web_service_pratice::user::routers::find)
+    ).await;
+
+    let req = create_register_request();
+
+    let response = test::call_service(&app, req).await;
+
+    assert_eq!(200, response.status().as_u16());
+
+    let body = response_to_string(response).await;
+
+    assert_eq!(json!({
+        "status": 0,
+        "message": "ok",
+        "data": {
+            "id": 1,
+            "name": "test",
+            "email": "test@gmail.com"
+        }
+    }).to_string(), body);
+}
 
 #[actix_rt::test]
 async fn test_register_success() {

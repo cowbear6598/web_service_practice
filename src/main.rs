@@ -29,6 +29,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 scope("/api/v1")
                     .service(web_service_pratice::user::routers::register)
+                    .service(web_service_pratice::user::routers::find)
             )
     })
         .bind((host, port))?
