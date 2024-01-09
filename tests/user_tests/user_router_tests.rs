@@ -4,17 +4,27 @@ use actix_web::{App, test};
 use actix_web::web::Data;
 use serde_json::json;
 
-use web_service_pratice::container::container::Container;
+use web_service_pratice::{
+    container::container::Container,
+    user::use_cases::user_use_case_trait::{MockUserUseCaseTrait, UserUseCaseTrait},
+};
 
 use crate::{
     common::functions::response_to_string,
-    common::mocks::user_mock::MockUserUseCaseTrait,
-    common::requests::user_request::create_register_request,
+    common::requests::user_request::create_register_request
 };
 
 #[actix_rt::test]
 async fn test_register_success() {
-    let container = create_container();
+    let mut mock_user_use_case = Box::new(
+        MockUserUseCaseTrait::new()
+    );
+
+    mock_user_use_case.expect_register()
+        .once()
+        .returning(|_| Ok(()));
+
+    let container = create_container(mock_user_use_case);
 
     let app = test::init_service(
         App::new()
@@ -36,10 +46,10 @@ async fn test_register_success() {
     }).to_string(), body);
 }
 
-fn create_container() -> Arc<Container> {
+fn create_container(user_use_case: Box<dyn UserUseCaseTrait>) -> Arc<Container> {
     Arc::new(
         Container {
-            user_use_case: Box::new(MockUserUseCaseTrait {}),
+            user_use_case,
         }
     )
 }
