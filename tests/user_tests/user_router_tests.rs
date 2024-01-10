@@ -15,6 +15,7 @@ use crate::{
     common::requests::user_request::create_register_request,
     common::fake_data::fake_user_response_dto
 };
+use crate::common::requests::user_request::create_find_query_request;
 
 #[actix_rt::test]
 async fn test_find_by_email_success() {
@@ -55,9 +56,7 @@ async fn test_find_success() {
     let req = create_register_request();
     let _ = test::call_service(&app, req).await;
 
-    let req = test::TestRequest::default()
-        .uri("/user/find")
-        .to_request();
+    let req = create_find_query_request();
 
     let response = test::call_service(&app, req).await;
 
