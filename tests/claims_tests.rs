@@ -71,7 +71,7 @@ mod claims_tests {
         let req = test::TestRequest::default()
             .to_http_request();
 
-        let claims = claims_use_case.decode_atoken_from_request(&req);
+        let claims = claims_use_case.decode_token_from_request(&req);
 
         assert_eq!("認證無效", claims.err().unwrap().to_string());
     }

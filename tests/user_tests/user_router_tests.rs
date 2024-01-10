@@ -15,10 +15,15 @@ use crate::{
     common::fake_data::fake_user_response_dto
 };
 
+#[actix_rt::test]
 async fn test_find_success() {
     let mut mock_user_use_case = Box::new(
         MockUserUseCaseTrait::new()
     );
+
+    mock_user_use_case.expect_register()
+        .once()
+        .returning(|_| Ok(()));
 
     mock_user_use_case.expect_find()
         .once()
@@ -29,10 +34,16 @@ async fn test_find_success() {
     let app = test::init_service(
         App::new()
             .app_data(Data::new(container.clone()))
+            .service(web_service_pratice::user::routers::register)
             .service(web_service_pratice::user::routers::find)
     ).await;
 
     let req = create_register_request();
+    let _ = test::call_service(&app, req).await;
+
+    let req = test::TestRequest::default()
+        .uri("/user/find")
+        .to_request();
 
     let response = test::call_service(&app, req).await;
 
@@ -44,7 +55,7 @@ async fn test_find_success() {
         "status": 0,
         "message": "ok",
         "data": {
-            "id": 1,
+            "uid": "1",
             "name": "test",
             "email": "test@gmail.com"
         }

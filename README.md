@@ -17,6 +17,7 @@
 
 - encode
 - decode
+- decode_from_req
 
 ### Actix Web
 
