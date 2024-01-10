@@ -2,7 +2,7 @@ use std::sync::Arc;
 use actix_web::{
     App,
     test,
-    web::Data
+    web::Data,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -10,7 +10,7 @@ use serial_test::serial;
 
 use web_service_pratice::{
     container::container::{Container, create_container},
-    user::types::user_response_dto::UserResponseDto
+    user::types::user_response_dto::UserResponseDto,
 };
 
 use crate::{
@@ -47,7 +47,7 @@ async fn test_find_success() {
     assert_eq!("test@gmail.com", user.data.email);
     assert_eq!("test", user.data.name);
 
-    container.user_use_case.remove("test@gmail.com".to_string()).await.expect("移除使用者失敗");
+    delete_test_user(container).await;
 }
 
 #[actix_rt::test]
@@ -72,6 +72,10 @@ async fn test_register_success() {
         "message":"ok"}
         ).to_string(), body);
 
+    delete_test_user(container).await;
+}
+
+async fn delete_test_user(container: Arc<Container>) {
     container.user_use_case.remove("test@gmail.com".to_string()).await.expect("移除使用者失敗");
 }
 
