@@ -1,8 +1,11 @@
 use std::sync::Arc;
 
-use actix_web::{App, test};
-use actix_web::dev::ServiceResponse;
-use actix_web::web::Data;
+use actix_web::{
+    App,
+    test,
+    dev::ServiceResponse,
+    web::Data
+};
 use serde_json::json;
 
 use web_service_pratice::{
@@ -13,9 +16,9 @@ use web_service_pratice::{
 use crate::{
     common::functions::response_to_string,
     common::requests::user_request::create_register_request,
-    common::fake_data::fake_user_response_dto
+    common::fake_data::fake_user_response_dto,
+    common::requests::user_request::create_find_query_request
 };
-use crate::common::requests::user_request::create_find_query_request;
 
 #[actix_rt::test]
 async fn test_find_by_email_success() {
