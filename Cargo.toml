@@ -9,6 +9,7 @@ actix-web = "4.4.1"
 actix-http = "3.5.1"
 actix-multipart = "0.6.1"
 actix-rt = "2.9.0"
+actix-files = "0.6.5"
 
 # database
 mongodb = "2.8.0"

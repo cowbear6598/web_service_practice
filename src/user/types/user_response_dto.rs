@@ -10,11 +10,11 @@ pub struct UserResponseDto {
 }
 
 impl From<User> for UserResponseDto {
-    fn from(value: User) -> Self {
+    fn from(user: User) -> Self {
         Self {
-            uid: value.uid,
-            name: value.name,
-            email: value.email,
+            uid: user.uid,
+            name: user.name,
+            email: user.email,
         }
     }
 }
